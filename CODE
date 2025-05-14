@@ -1,66 +1,117 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <limits>
-#include <iomanip>
 using namespace std;
 
+// ask the user how many temperatures they'll input and collect them
+void getTemperatures(vector<float> &temps, int &count) {
+    cout << "how many temperature readings today? ";
+    while (!(cin >> count) || count <= 0) {
+        cout << "please enter a valid positive integer: ";
+        cin.clear();
+        cin.ignore(1000, '\n');
+    }
+
+    temps.clear();
+    for (int i = 0; i < count; i++) {
+        float reading;
+        cout << "enter temperature #" << (i + 1) << ": ";
+        while (!(cin >> reading)) {
+            cout << "invalid input. kindly enter a valid number: ";
+            cin.clear();
+            cin.ignore(1000, '\n');
+        }
+        temps.push_back(reading);
+    }
+}
+
+// calculate the average temperature
+float averageTemp(const vector<float> &temps) {
+    float total = 0;
+    for (float t : temps) total += t;
+    return temps.empty() ? 0 : total / temps.size();
+}
+
+// find the highest temperature in the list
+float highestTemp(const vector<float> &temps) {
+    float highest = temps[0];
+    for (float t : temps)
+        if (t > highest) highest = t;
+    return highest;
+}
+
+// find the lowest temperature in the list
+float lowestTemp(const vector<float> &temps) {
+    float lowest = temps[0];
+    for (float t : temps)
+        if (t < lowest) lowest = t;
+    return lowest;
+}
+
+// count how many readings were above 40 degrees
+int readingsAbove40(const vector<float> &temps) {
+    int count = 0;
+    for (float t : temps)
+        if (t > 40) count++;
+    return count;
+}
+
+// sort the temperature readings from lowest to highest
+void sortAscending(vector<float> &temps) {
+    int n = temps.size();
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (temps[j] > temps[j + 1]) {
+                float temp = temps[j];
+                temps[j] = temps[j + 1];
+                temps[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// display results like average, highest, lowest, etc.
+void showResults(const vector<float> &temps) {
+    float avg = averageTemp(temps);
+    float high = highestTemp(temps);
+    float low = lowestTemp(temps);
+    int over40 = readingsAbove40(temps);
+
+    vector<float> sortedTemps = temps;
+    sortAscending(sortedTemps);  
+
+    cout << "\n--- results for today ---\n";
+    cout << "average temperature: " << avg << "°c\n";
+    cout << "highest temperature: " << high << "°c\n";
+    cout << "lowest temperature: " << low << "°c\n";
+    cout << "above 40°c: " << over40 << " readings\n";
+    cout << "sorted temperatures: ";
+    for (float t : sortedTemps) {
+        cout << t << " ";
+    }
+    cout << "\n";
+    cout << "--------------\n\n";
+}
+
+// main function to run the temperature program
 int main() {
-    char anotherDay;
+    vector<float> temperatures;
+    int count;
+    char again;
 
     do {
-        int numTemps;
-        vector<float> temperatures;
+        getTemperatures(temperatures, count);
+        showResults(temperatures);
 
-        cout << "Enter the number of temperature readings for the day: ";
-        cin >> numTemps;
-
-        for (int i = 0; i < numTemps; ++i) {
-            float temp;
-            cout << "Enter temperature #" << i + 1 << ": ";
-            cin >> temp;
-            temperatures.push_back(temp);
+        cout << "enter another day's data? (y/n): ";
+        cin >> again;
+        while (toupper(again) != 'Y' && toupper(again) != 'N') {
+            cout << "please enter y or n: ";
+            cin >> again;
+            cin.ignore(1000, '\n');
         }
 
-        // Calculate average
-        float sum = 0;
-        for (float t : temperatures)
-            sum += t;
-        float average = sum / temperatures.size();
+    } while (toupper(again) == 'Y');
 
-        // Find highest and lowest
-        float highest = *max_element(temperatures.begin(), temperatures.end());
-        float lowest = *min_element(temperatures.begin(), temperatures.end());
-
-        // Count readings > 40°C
-        int countAbove40 = 0;
-        for (float t : temperatures) {
-            if (t > 40)
-                countAbove40++;
-        }
-
-        // Sort in ascending order
-        sort(temperatures.begin(), temperatures.end());
-
-        // Display results
-        cout << fixed << setprecision(2);
-        cout << "\n--- Results for the Day ---" << endl;
-        cout << "Average Temperature: " << average << "°C" << endl;
-        cout << "Highest Temperature: " << highest << "°C" << endl;
-        cout << "Lowest Temperature: " << lowest << "°C" << endl;
-        cout << "Readings above 40°C: " << countAbove40 << endl;
-        cout << "Temperatures in Ascending Order: " << endl;
-        for (float t : temperatures)
-            cout << t << " " << endl;
-        cout << "\n\n----------------------------\n";
-
-        // Ask if user wants to process another day
-        cout << "Do you want to enter data for another day? (Y/N): ";
-        cin >> anotherDay;
-        cout << endl;
-
-    } while (anotherDay == 'Y' || anotherDay == 'y');
-
-    cout << "Program ended. Thank you!" << endl;
+    cout << "thank you and have a nice day! \n";
     return 0;
 }
