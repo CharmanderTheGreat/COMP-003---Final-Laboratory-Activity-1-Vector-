@@ -1,0 +1,66 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <limits>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    char anotherDay;
+
+    do {
+        int numTemps;
+        vector<float> temperatures;
+
+        cout << "Enter the number of temperature readings for the day: ";
+        cin >> numTemps;
+
+        for (int i = 0; i < numTemps; ++i) {
+            float temp;
+            cout << "Enter temperature #" << i + 1 << ": ";
+            cin >> temp;
+            temperatures.push_back(temp);
+        }
+
+        // Calculate average
+        float sum = 0;
+        for (float t : temperatures)
+            sum += t;
+        float average = sum / temperatures.size();
+
+        // Find highest and lowest
+        float highest = *max_element(temperatures.begin(), temperatures.end());
+        float lowest = *min_element(temperatures.begin(), temperatures.end());
+
+        // Count readings > 40°C
+        int countAbove40 = 0;
+        for (float t : temperatures) {
+            if (t > 40)
+                countAbove40++;
+        }
+
+        // Sort in ascending order
+        sort(temperatures.begin(), temperatures.end());
+
+        // Display results
+        cout << fixed << setprecision(2);
+        cout << "\n--- Results for the Day ---" << endl;
+        cout << "Average Temperature: " << average << "°C" << endl;
+        cout << "Highest Temperature: " << highest << "°C" << endl;
+        cout << "Lowest Temperature: " << lowest << "°C" << endl;
+        cout << "Readings above 40°C: " << countAbove40 << endl;
+        cout << "Temperatures in Ascending Order: " << endl;
+        for (float t : temperatures)
+            cout << t << " " << endl;
+        cout << "\n\n----------------------------\n";
+
+        // Ask if user wants to process another day
+        cout << "Do you want to enter data for another day? (Y/N): ";
+        cin >> anotherDay;
+        cout << endl;
+
+    } while (anotherDay == 'Y' || anotherDay == 'y');
+
+    cout << "Program ended. Thank you!" << endl;
+    return 0;
+}
